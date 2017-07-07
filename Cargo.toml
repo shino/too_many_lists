@@ -1,0 +1,6 @@
+[package]
+name = "too_many_lists"
+version = "0.1.0"
+authors = ["Shunichi Shinohara <shino.shun@gmail.com>"]
+
+[dependencies]
