@@ -204,5 +204,27 @@ mod test {
         // assert_eq!(iter2.next(), Some(&mut 3));
     }
 
+    #[test]
+    fn iter_mut_mutate() {
+        let mut list = List::new();
+        list.push(1); list.push(2); list.push(3);
+
+        {
+            let mut iter = list.iter_mut();
+            let x = iter.next().unwrap();
+            *x = 11;
+            let _ = iter.next();
+            let z = iter.next().unwrap();
+            *z = 33;
+        }
+
+        let mut iter = list.iter();
+        assert_eq!(iter.next(), Some(&11));
+        assert_eq!(iter.next(), Some(&2));
+        assert_eq!(iter.next(), Some(&33));
+        assert_eq!(iter.next(), None);
+    }
+
+
 }
 
