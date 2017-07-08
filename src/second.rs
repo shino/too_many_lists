@@ -39,8 +39,8 @@ impl<T> List<T> {
     pub fn pop(&mut self) -> Option<T> {
         // https://doc.rust-lang.org/std/option/enum.Option.html#method.map
         self.head.take().map(|boxed_node| {
-            // move node into this frame, which should be deleted when
-            // this function finishes.
+            // `boxed_node` has been moved into this frame, which should be
+            // deleted when this function finishes.
             let node = *boxed_node;
             self.head = node.next;
             node.elem
@@ -48,6 +48,7 @@ impl<T> List<T> {
     }
 
     pub fn peek(&self) -> Option<&T> {
+        // Don't move `node` by value because only reference is needed.
         self.head.as_ref().map(|node| {
             &node.elem
         })
