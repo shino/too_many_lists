@@ -1,5 +1,5 @@
 use std::rc::Rc;
-use std::cell::RefCell;
+use std::cell::{Ref, RefCell};
 
 pub struct List<T> {
     head: Link<T>,
@@ -13,7 +13,6 @@ struct Node<T> {
     next: Link<T>,
     prev: Link<T>,
 }
-
 
 impl<T> Node<T> {
     fn new(elem: T) -> Rc<RefCell<Self>> {
@@ -76,6 +75,18 @@ impl<T> List<T> {
         })
     }
 
+    pub fn peek_front(&self) -> Option<Ref<T>> {
+        // impl<'b, T> Ref<'b, T> where T: ?Sized,
+        //   `fn map<U, F>(orig: Ref<'b, T>, f: F) -> Ref<'b, U>`
+        //   where
+        //     F: FnOnce(&T) -> &U,
+        //     U: ?Sized,
+        // https://doc.rust-lang.org/std/cell/struct.Ref.html#method.map
+        self.head.as_ref().map(|node| {
+            Ref::map(node.borrow(), |node| &node.elem)
+        })
+    }
+
 }
 
 impl<T> Drop for List<T> {
@@ -99,6 +110,9 @@ mod test {
         list.push_front(1);
         list.push_front(2);
         list.push_front(3);
+
+        // Peek
+        assert_eq!(*list.peek_front().unwrap(), 3);
 
         // Check normal removal
         assert_eq!(list.pop_front(), Some(3));
