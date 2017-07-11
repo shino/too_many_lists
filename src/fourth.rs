@@ -1,3 +1,5 @@
+// fourth: A Bad Safe Dequeue
+
 use std::rc::Rc;
 use std::cell::{RefCell, Ref, RefMut};
 
@@ -13,6 +15,10 @@ struct Node<T> {
     next: Link<T>,
     prev: Link<T>,
 }
+
+pub struct IntoIter<T>(List<T>);
+
+
 
 impl<T> Node<T> {
     fn new(elem: T) -> Rc<RefCell<Self>> {
@@ -134,7 +140,26 @@ impl<T> List<T> {
             RefMut::map(node.borrow_mut(), |node| &mut node.elem)
         })
     }
+
+    pub fn into_iter(self) -> IntoIter<T> {
+        IntoIter(self)
+    }
+
 }
+
+impl<T> Iterator for IntoIter<T> {
+    type Item = T;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.pop_front()
+    }
+}
+
+impl<T> DoubleEndedIterator for IntoIter<T> {
+    fn next_back(&mut self) -> Option<T> {
+        self.0.pop_back()
+    }
+}
+
 
 impl<T> Drop for List<T> {
     fn drop(&mut self) {
@@ -222,4 +247,21 @@ mod test {
         assert_eq!(&*list.peek_back().unwrap(), &1);
         assert_eq!(&*list.peek_back_mut().unwrap(), &mut 1);
     }
+
+    #[test]
+    fn into_iter() {
+        let mut list = List::new();
+        list.push_front(1); list.push_front(2); list.push_front(3);
+        list.push_front(4); list.push_front(5);
+
+        let mut iter = list.into_iter();
+        assert_eq!(iter.next(), Some(5));
+        assert_eq!(iter.next_back(), Some(1));
+        assert_eq!(iter.next(), Some(4));
+        assert_eq!(iter.next_back(), Some(2));
+        assert_eq!(iter.next_back(), Some(3));
+        assert_eq!(iter.next(), None);
+        assert_eq!(iter.next_back(), None);
+    }
+
 }
