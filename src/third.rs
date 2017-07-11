@@ -1,3 +1,7 @@
+/// third: A Persistent Singly-Linked List
+/// - persistent
+/// - iterator (only immutable)
+
 use std::rc::Rc;
 
 pub struct List<T> {

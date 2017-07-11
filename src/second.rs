@@ -1,3 +1,7 @@
+/// second : An Ok Stack
+/// - generics
+/// - iterators (including mutable)
+
 pub struct List<T> {
     head: Link<T>,
 }
